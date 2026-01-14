@@ -1,0 +1,766 @@
+{
+  "version": "7.0.0",
+  "name": "angular-pro-tools-extension",
+  "displayName": "Angular Pro Tools (Schematics)",
+  "description": "Accelerate and simplify Angular feature development in Visual Studio Code. This extension provides powerful, customizable code generation for components, services, modules, routes, and more, following the latest Angular best practices and naming conventions. Includes advanced configuration options, workspace integration, and productivity tools to help you scaffold and maintain Angular codebases efficiently, whether you are using standard or custom schematics.",
+  "publisher": "tucyzirille-studio",
+  "keywords": [
+    "angular",
+    "angular cli",
+    "schematics",
+    "angular schematics",
+    "multi-root ready",
+    "workspace tools",
+    "code generation",
+    "ng generate",
+    "vscode extension",
+    "angular automation",
+    "angular best practices",
+    "ng schematic",
+    "angular workflow",
+    "angular productivity",
+    "angular templates",
+    "typescript",
+    "pro tools",
+    "scaffolding",
+    "file generator",
+    "custom schematics",
+    "angular code tools",
+    "visual studio code",
+    "angular 20",
+    "angular naming conventions",
+    "ng",
+    "standalone components",
+    "component generator",
+    "service generator",
+    "module generator",
+    "angular utilities",
+    "angular devtools"
+  ],
+  "categories": [
+    "Other",
+    "Programming Languages",
+    "Productivity",
+    "Snippets",
+    "Source Control"
+  ],
+  "icon": "angular.png",
+  "license": "MIT",
+  "author": "Tucy Zirille",
+  "repository": {
+    "url": "https://github.com/"
+  },
+  "bugs": {
+    "url": "https://github.com/issues"
+  },
+  "qna": false,
+  "engines": {
+    "vscode": "^1.96.0"
+  },
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "angular-schematics.activateLicense",
+        "title": "Angular Schematics: Activate your license",
+        "shortTitle": "Angular Schematics: License"
+      },
+      {
+        "command": "angular-schematics.generate",
+        "title": "Angular Schematics: Generate a file",
+        "shortTitle": "Angular Schematics: Generate"
+      },
+      {
+        "command": "angular-schematics.documentation",
+        "title": "Angular Schematics: Documentation and tutorial",
+        "shortTitle": "Angular Schematics: Documentation"
+      },
+      {
+        "command": "angular-schematics.configuration",
+        "title": "Angular Schematics: Configuration helper",
+        "shortTitle": "Angular Schematics: Configuration"
+      },
+      {
+        "command": "angular-schematics.createSchematic",
+        "title": "Angular Schematics: Create a custom schematic",
+        "shortTitle": "Angular Schematics: Custom schematic"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "angular-schematics.generate",
+          "group": "angular-schematics@1"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "angular",
+          "title": "Angular Schematics",
+          "icon": "angular.svg"
+        }
+      ]
+    },
+    "views": {
+      "angular": [
+        {
+          "id": "angular-schematics",
+          "icon": "angular.svg",
+          "name": "",
+          "when": "angular-schematics && !angular-schematics-pro-edition"
+        },
+        {
+          "id": "angular-schematics-pro-edition",
+          "icon": "angular.svg",
+          "name": "",
+          "when": "angular-schematics && angular-schematics-pro-edition"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "angular-schematics",
+        "contents": "Welcome to the Angular Schematics extension.\n[Documentation and tutorial](command:angular-schematics.documentation)\n[Configuration helper](command:angular-schematics.configuration)\n[Create a custom schematic](command:angular-schematics.createSchematic)\nSome features, marked with a diamond 💎, are only available in the Pro edition.\nWhile this extension is very popular, with 1 million installations, it is not a tool developed by the Angular team or affiliated to Google in any way.\nIt is months of unpaid work by a single contributor.\nSo feel free to enjoy advanced features and support a contributor at the same time! 💖\n[Activate your license](command:angular-schematics.activateLicense)"
+      },
+      {
+        "view": "angular-schematics-pro-edition",
+        "contents": "Welcome to the Angular Schematics extension.\nYou have subscribed to the Pro edition, thank you! 💖\nIt gives you access to all the features of this extension.\n[Documentation and tutorial](command:angular-schematics.documentation)\n[Configuration helper](command:angular-schematics.configuration)\n[Create a custom schematic](command:angular-schematics.createSchematic)"
+      }
+    ],
+    "configuration": [
+      {
+        "title": "Angular Schematics",
+        "properties": {
+          "angular-schematics.schematicsDisabled": {
+            "scope": "resource",
+            "description": "List of schematics ids to disable.",
+            "type": "array",
+            "default": null,
+            "uniqueItems": true,
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "angular-service",
+                    "angular-component",
+                    "angular-page",
+                    "angular-routes",
+                    "angular-directive",
+                    "angular-pipe",
+                    "angular-module-declarations",
+                    "angular-guard",
+                    "angular-interceptor",
+                    "angular-resolver",
+                    "angular-async-reactive-service",
+                    "angular-sync-reactive-service",
+                    "angular-material-dialog",
+                    "angular-material-table",
+                    "angular-unit-test",
+                    "typescript-interface",
+                    "typescript-class"
+                  ]
+                },
+                {
+                  "type": "string",
+                  "minLength": 1
+                }
+              ]
+            }
+          },
+          "angular-schematics.schematicsDefaultOptions": {
+            "scope": "resource",
+            "description": "List of default values for schematics options.",
+            "type": "object",
+            "additionalProperties": false,
+            "default": null,
+            "properties": {
+              "angular-*": {
+                "type": "object",
+                "properties": {
+                  "shadowDom": {
+                    "type": "boolean",
+                    "description": "Use native \"ShadowDom\" encapsulation for components and pages"
+                  },
+                  "externalTemplate": {
+                    "type": "boolean",
+                    "description": "Generate an external HTML file instead of an inline HTML template for components and pages"
+                  },
+                  "inlineStyle": {
+                    "type": "boolean",
+                    "description": "Generate inline styles instead of an external style file for components and pages"
+                  },
+                  "style": {
+                    "type": "string",
+                    "enum": [
+                      "css",
+                      "scss",
+                      "sass",
+                      "less"
+                    ],
+                    "default": "css",
+                    "description": "Style file extension"
+                  },
+                  "skipStyle": {
+                    "type": "boolean",
+                    "description": "Do not add style to components and pages"
+                  },
+                  "stylesArray": {
+                    "type": "boolean",
+                    "description": "In Angular >= 17, set styles as an array for multiple styles, instead of a single style"
+                  },
+                  "selectorPrefix": {
+                    "type": "string",
+                    "description": "Prefix of the selector for components, directives and pipes"
+                  },
+                  "withClassPrefix": {
+                    "type": "boolean",
+                    "description": "Add the selector prefix to the class name"
+                  }
+                }
+              },
+              "angular-component": {
+                "type": "object",
+                "properties": {
+                  "skipChangeDetectionOnPush": {
+                    "type": "boolean",
+                    "description": "Do not optimize components with OnPush change detection"
+                  },
+                  "skipDisplayBlock": {
+                    "type": "boolean",
+                    "description": "Do not add `:host { display: block; }` to styles of components"
+                  },
+                  "ngOnInit": {
+                    "type": "boolean",
+                    "description": "Add ngOnInit() method in components"
+                  },
+                  "skipPathSubfolder": {
+                    "type": "boolean",
+                    "description": "Generate a flat file directly, not a file inside a folder"
+                  },
+                  "shadowDom": {
+                    "type": "boolean",
+                    "description": "Use native \"ShadowDom\" encapsulation for components"
+                  },
+                  "externalTemplate": {
+                    "type": "boolean",
+                    "description": "Generate an external HTML file instead of an inline HTML template for components"
+                  },
+                  "inlineStyle": {
+                    "type": "boolean",
+                    "description": "Generate inline styles instead of an external style file for components"
+                  },
+                  "skipStyle": {
+                    "type": "boolean",
+                    "description": "Do not add style to components"
+                  },
+                  "suffix": {
+                    "type": "string",
+                    "description": "Suffix for the class name (for example: \"component\", or a custom one for Pro edition users)."
+                  },
+                  "fileNameSuffix": {
+                    "type": "string",
+                    "description": "Suffix for the file name (for example: \".component\", or a custom one for Pro edition users)."
+                  }
+                }
+              },
+              "angular-page": {
+                "type": "object",
+                "properties": {
+                  "eagerLoading": {
+                    "type": "boolean",
+                    "description": "Add an eager loaded route instead of a lazy-loaded route for pages"
+                  },
+                  "skipChangeDetectionOnPush": {
+                    "type": "boolean",
+                    "description": "Do not optimize pages with OnPush change detection"
+                  },
+                  "skipNgOnInit": {
+                    "type": "boolean",
+                    "description": "Do not add ngOnInit() method in pages"
+                  },
+                  "skipPathSubfolder": {
+                    "type": "boolean",
+                    "description": "Generate a flat file directly, not a file inside a folder"
+                  },
+                  "shadowDom": {
+                    "type": "boolean",
+                    "description": "Use native \"ShadowDom\" encapsulation for pages"
+                  },
+                  "externalTemplate": {
+                    "type": "boolean",
+                    "description": "Generate an external HTML file instead of an inline HTML template for pages"
+                  },
+                  "inlineStyle": {
+                    "type": "boolean",
+                    "description": "Generate inline styles instead of an external style file for pages"
+                  },
+                  "skipStyle": {
+                    "type": "boolean",
+                    "description": "Do not add style to pages"
+                  },
+                  "suffix": {
+                    "type": "string",
+                    "description": "Suffix for the class name (for example: \"page\", or a custom one for Pro edition users)."
+                  },
+                  "fileNameSuffix": {
+                    "type": "string",
+                    "description": "Suffix for the file name (for example: \".page\", or a custom one for Pro edition users)."
+                  }
+                }
+              },
+              "angular-directive": {
+                "type": "object",
+                "properties": {
+                  "suffix": {
+                    "type": "string",
+                    "description": "Suffix for the class name (for example: \"directive\", or a custom one for Pro edition users)."
+                  },
+                  "fileNameSuffix": {
+                    "type": "string",
+                    "description": "Suffix for the file name (for example: \".directive\", or a custom one for Pro edition users)."
+                  }
+                }
+              },
+              "angular-pipe": {
+                "type": "object",
+                "properties": {
+                  "suffix": {
+                    "type": "string",
+                    "description": "Suffix for the class name (for example: \"pipe\", or a custom one for Pro edition users)."
+                  },
+                  "fileNameSuffix": {
+                    "type": "string",
+                    "description": "Suffix for the file name (for example: \".pipe\", or a custom one for Pro edition users)."
+                  }
+                }
+              },
+              "angular-routes": {
+                "type": "object",
+                "properties": {
+                  "eagerLoading": {
+                    "type": "boolean",
+                    "description": "Add eager loaded routes instead of lazy-loaded routes"
+                  }
+                }
+              },
+              "angular-service": {
+                "type": "object",
+                "properties": {
+                  "suffix": {
+                    "type": "string",
+                    "description": "Suffix for the class name (for example: \"service\", or a custom one for Pro edition users)."
+                  },
+                  "fileNameSuffix": {
+                    "type": "string",
+                    "description": "Suffix for the file name (for example: \".service\", or a custom one for Pro edition users)."
+                  }
+                }
+              },
+              "angular-interceptor": {
+                "type": "object",
+                "properties": {
+                  "skipProvider": {
+                    "type": "boolean",
+                    "description": "Do not provide interceptors"
+                  },
+                  "suffix": {
+                    "type": "string",
+                    "description": "Suffix for the function name (for example: \"interceptor\", or a custom one for Pro edition users)."
+                  },
+                  "fileNameSuffix": {
+                    "type": "string",
+                    "description": "Suffix for the file name (for example: \".interceptor\", or a custom one for Pro edition users)."
+                  }
+                }
+              },
+              "angular-guard": {
+                "type": "object",
+                "properties": {
+                  "suffix": {
+                    "type": "string",
+                    "description": "Suffix for the function name (for example: \"guard\", or a custom one for Pro edition users)."
+                  },
+                  "fileNameSuffix": {
+                    "type": "string",
+                    "description": "Suffix for the file name (for example: \".guard\", or a custom one for Pro edition users)."
+                  }
+                }
+              },
+              "angular-resolver": {
+                "type": "object",
+                "properties": {
+                  "suffix": {
+                    "type": "string",
+                    "description": "Suffix for the function name (for example: \"resolver\", or a custom one for Pro edition users)."
+                  },
+                  "fileNameSuffix": {
+                    "type": "string",
+                    "description": "Suffix for the file name (for example: \".resolver\", or a custom one for Pro edition users)."
+                  }
+                }
+              },
+              "angular-sync-reactive-service": {
+                "type": "object",
+                "properties": {
+                  "skipDocumentation": {
+                    "type": "boolean",
+                    "description": "Not recommended: collaborators (present or future) may need it."
+                  },
+                  "suffix": {
+                    "type": "string",
+                    "description": "Suffix for the class name (for example: \"service\", or a custom one for Pro edition users)."
+                  },
+                  "fileNameSuffix": {
+                    "type": "string",
+                    "description": "Suffix for the file name (for example: \".service\", or a custom one for Pro edition users)."
+                  }
+                }
+              },
+              "angular-async-reactive-service": {
+                "type": "object",
+                "properties": {
+                  "skipDocumentation": {
+                    "type": "boolean",
+                    "description": "Not recommended: collaborators (present or future) may need it."
+                  },
+                  "suffix": {
+                    "type": "string",
+                    "description": "Suffix for the function name (for example: \"service\", or a custom one for Pro edition users)."
+                  },
+                  "fileNameSuffix": {
+                    "type": "string",
+                    "description": "Suffix for the file name (for example: \".service\", or a custom one for Pro edition users)."
+                  }
+                }
+              },
+              "angular-material-dialog": {
+                "type": "object",
+                "properties": {
+                  "skipChangeDetectionOnPush": {
+                    "type": "boolean",
+                    "description": "Do not optimize components with OnPush change detection"
+                  },
+                  "ngOnInit": {
+                    "type": "boolean",
+                    "description": "Add ngOnInit() method in components"
+                  },
+                  "skipPathSubfolder": {
+                    "type": "boolean",
+                    "description": "Generate a flat file directly, not a file inside a folder"
+                  },
+                  "shadowDom": {
+                    "type": "boolean",
+                    "description": "Use native \"ShadowDom\" encapsulation for components"
+                  },
+                  "externalTemplate": {
+                    "type": "boolean",
+                    "description": "Generate an external HTML file instead of an inline HTML template for components"
+                  },
+                  "inlineStyle": {
+                    "type": "boolean",
+                    "description": "Generate inline styles instead of an external style file for components"
+                  },
+                  "skipStyle": {
+                    "type": "boolean",
+                    "description": "Do not add style to components"
+                  },
+                  "suffix": {
+                    "type": "string",
+                    "description": "Suffix for the class name (for example: \"dialog\", or a custom one for Pro edition users)."
+                  },
+                  "fileNameSuffix": {
+                    "type": "string",
+                    "description": "Suffix for the file name (for example: \".dialog\", or a custom one for Pro edition users)."
+                  }
+                }
+              },
+              "angular-material-table": {
+                "type": "object",
+                "properties": {
+                  "fixedLayout": {
+                    "type": "boolean",
+                    "description": "Use a fixed layout for all tables instead of the default dynamic one"
+                  },
+                  "skipChangeDetectionOnPush": {
+                    "type": "boolean",
+                    "description": "Do not optimize components with OnPush change detection"
+                  },
+                  "skipDisplayBlock": {
+                    "type": "boolean",
+                    "description": "Do not add `:host { display: block; }` to styles of components"
+                  },
+                  "ngOnInit": {
+                    "type": "boolean",
+                    "description": "Add ngOnInit() method in components"
+                  },
+                  "skipPathSubfolder": {
+                    "type": "boolean",
+                    "description": "Generate a flat file directly, not a file inside a folder"
+                  },
+                  "shadowDom": {
+                    "type": "boolean",
+                    "description": "Use native \"ShadowDom\" encapsulation for components"
+                  },
+                  "externalTemplate": {
+                    "type": "boolean",
+                    "description": "Generate an external HTML file instead of an inline HTML template for components"
+                  },
+                  "inlineStyle": {
+                    "type": "boolean",
+                    "description": "Generate inline styles instead of an external style file for components"
+                  },
+                  "skipStyle": {
+                    "type": "boolean",
+                    "description": "Do not add style to components"
+                  },
+                  "suffix": {
+                    "type": "string",
+                    "description": "Suffix for the class name (for example: \"component\", or a custom one for Pro edition users)."
+                  },
+                  "fileNameSuffix": {
+                    "type": "string",
+                    "description": "Suffix for the file name (for example: \".component\", or a custom one for Pro edition users)."
+                  }
+                }
+              }
+            },
+            "patternProperties": {
+              "^((?:@[a-zA-Z0-9._-]+/)?[a-zA-Z0-9._-]+:)?[a-zA-Z*-]+$": {
+                "description": "Schematic identifier (example: \"angular-component\").",
+                "type": "object",
+                "patternProperties": {
+                  "^[a-zA-Z]+$": {
+                    "description": "Name of the option (example: \"externalTemplate\")",
+                    "oneOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "angular-schematics.pathsWithPredefinedSchematic": {
+            "scope": "resource",
+            "description": "List of paths with a predefined associated schematic(s).",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "path",
+                "schematicId"
+              ],
+              "properties": {
+                "path": {
+                  "description": "A path relative to the workspace folder (for example: \"src/app/core-services\"). Globs are possible (for example: \"src/app/features/**/pages\"), it uses minimath",
+                  "type": "string",
+                  "minLength": 1
+                },
+                "schematicId": {
+                  "description": "Required identifier(s) of the schematic to preselect for this path (example: \"angular-component\" or [\"angular-component\", \"angular-directive\"]).",
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": [
+                        "angular-service",
+                        "angular-component",
+                        "angular-page",
+                        "angular-routes",
+                        "angular-directive",
+                        "angular-pipe",
+                        "angular-module-declarations",
+                        "angular-guard",
+                        "angular-interceptor",
+                        "angular-resolver",
+                        "angular-async-reactive-service",
+                        "angular-sync-reactive-service",
+                        "angular-material-dialog",
+                        "angular-material-table",
+                        "angular-unit-test",
+                        "typescript-interface",
+                        "typescript-class"
+                      ]
+                    },
+                    {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    {
+                      "type": "array",
+                      "uniqueItems": true,
+                      "minItems": 1,
+                      "items": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "enum": [
+                              "angular-service",
+                              "angular-component",
+                              "angular-page",
+                              "angular-routes",
+                              "angular-directive",
+                              "angular-pipe",
+                              "angular-module-declarations",
+                              "angular-guard",
+                              "angular-interceptor",
+                              "angular-resolver",
+                              "angular-async-reactive-service",
+                              "angular-sync-reactive-service",
+                              "angular-material-dialog",
+                              "angular-material-table",
+                              "angular-unit-test",
+                              "typescript-interface",
+                              "typescript-class"
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "angular-schematics.enforceArchitecture": {
+            "scope": "resource",
+            "description": "Authorize generation only in paths configured in \"pathsWithPredefinedSchematic\". \"error\" will restrict generation in other paths. \"warn\" will warn the user but allows to do it anyway. \"off\" by default or if \"pathsWithPredefinedSchematic\" is empty.",
+            "type": "string",
+            "enum": [
+              "off",
+              "warn",
+              "error"
+            ],
+            "default": "off"
+          },
+          "angular-schematics.additionalSchematics": {
+            "scope": "resource",
+            "description": "List of relative paths of local schematics parent folders (example: [\"./schematics\"]).",
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^\\.\\/"
+            }
+          },
+          "angular-schematics.localSchematicsPath": {
+            "scope": "resource",
+            "description": "Destination path when creating new custom schematics, relative to the workspace folder. Defaults to \"./schematics\".",
+            "type": "string",
+            "pattern": "^\\.\\/",
+            "default": "./schematics"
+          },
+          "angular-schematics.localSchematicsPrefix": {
+            "scope": "resource",
+            "description": "Prefix for schematic id when creating new custom schematics (example: \"mycompany\").",
+            "type": "string"
+          },
+          "angular-schematics.angularForceNgModules": {
+            "scope": "resource",
+            "description": "Generate components, directives and pipes with NgModules instead of standalone ones. Not recommanded.",
+            "type": "boolean",
+            "default": false
+          },
+          "angular-schematics.angularForceClassInterceptor": {
+            "scope": "resource",
+            "description": "Generate class interceptors instead of functional ones. Not recommanded.",
+            "type": "boolean",
+            "default": false
+          },
+          "angular-schematics.angularForceClassGuardsAndResolvers": {
+            "scope": "resource",
+            "description": "Generate class guards and resolvers instead of functional ones. Not recommanded.",
+            "type": "boolean",
+            "default": false
+          },
+          "angular-schematics.angularDisableProjectPathCheck": {
+            "scope": "resource",
+            "description": "By default, for Angular schematics, the extension checks if the destination path is part of a known Angular project from angular.json. But some projects diverge from the official Angular CLI configuration, so, while not recommended, this option allows to disable this check.",
+            "type": "boolean",
+            "default": false
+          },
+          "angular-schematics.forcedDependencies": {
+            "scope": "resource",
+            "description": "If the extension cannot detect your dependencies, you can force them here, with the same syntax as package.json. For example: { \"@angular/core\": \"^17.0.0\" }",
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "webpack --no-performance",
+    "watch": "webpack --config webpack.config.watch.js --watch",
+    "test": "rm -rf out && tsc -p ./ && node ./out/test/runTest.js --version insiders",
+    "lint": "eslint src/",
+    "checks": "npm run lint && npm run vscode:prepublish",
+    "ci:stable": "tsc -p ./ --skipLibCheck && node ./out/test/runTest.js",
+    "ci:insiders": "tsc -p ./ --skipLibCheck && node ./out/test/runTest.js --version insiders",
+    "ci:minimal": "tsc -p ./ --skipLibCheck && node ./out/test/runTest.js --version 1.96.0",
+    "package": "vsce package",
+    "publish": "vsce publish --packagePath angular-schematics-$npm_package_version.vsix && npm run openvsix",
+    "openvsix": "ovsx publish angular-schematics-$npm_package_version.vsix -p $OPENVSIX_TOKEN",
+    "release:patch": "npm run vscode:prepublish && npm version patch && git push && git push --tags && npm run package",
+    "release:minor": "npm run vscode:prepublish && npm version minor && git push && git push --tags && npm run package",
+    "release:major": "npm run vscode:prepublish && npm version major && git push && git push --tags && npm run package"
+  },
+  "devDependencies": {
+    "@types/ini": "^4.1.1",
+    "@types/js-yaml": "^4.0.9",
+    "@types/minimist": "^1.2.5",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "~20.17.0",
+    "@types/semver": "^7.7.1",
+    "@types/vscode": "~1.96.0",
+    "@vscode/test-electron": "^2.5.2",
+    "@vscode/vsce": "^3.6.2",
+    "better-typescript-lib": "~2.12.0",
+    "eslint": "^9.38.0",
+    "glob": "^11.0.3",
+    "javascript-obfuscator": "^4.1.1",
+    "minimist": "^1.2.8",
+    "mocha": "^11.7.4",
+    "ovsx": "^0.10.6",
+    "ts-loader": "^9.5.4",
+    "typescript": "~5.9.2",
+    "typescript-eslint": "^8.46.1",
+    "webpack": "^5.102.1",
+    "webpack-cli": "^6.0.1",
+    "webpack-obfuscator": "^3.5.1"
+  },
+  "dependencies": {
+    "@iarna/toml": "^2.2.5",
+    "handlebars": "^4.7.8",
+    "ini": "^5.0.0",
+    "js-yaml": "^4.1.0",
+    "jsonc-parser": "^3.3.1",
+    "minimatch": "^10.0.3",
+    "request-light": "^0.8.0",
+    "semver": "^7.7.3",
+    "ts-morph": "^27.0.2",
+    "vscode-uri": "^3.1.0"
+  }
+}
